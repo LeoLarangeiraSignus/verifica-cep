@@ -18,17 +18,41 @@ ENTER := CHAR(10) + CHAR(13)
     (examples)
     @see (links_or_references)
 /*/
-Static Function VerifyCEP(cToken)
-    Local cURL := ''
-    Local nT := 0
-    Local aCEPs := {}
-    Local aECeps := {}
-    Local oHTTP := HttpGet(cUrl)
+Static Function rErCeps(aECeps)
+    Local oExcel := Nil
+    Local oSheet := Nil
+    Local cFileName := "ceps-errados.xlsx"
+    Local nLastRow := 2
 
-    Local jDados
-    Local cQry1 := ""
-    Local cAlias1 := ""
-    
+    if File(cFileName)
+        oExcel := FWMsExcel():New()
+        oExcel:Load( cFileName )
+        oSheet := oExcel:ActiveSheet()
+        nLastRow := oSheet:LastRow() + 1
+    else
+        oExcel := FWMsExcel():New()
+        oSheet := oExcel:AddSheet( "CEPs Errados" )
+
+        // Cabeçalho formatado
+        oSheet:Write( 1, 1, "Email" )
+        oSheet:Write( 1, 2, "CEP" )
+
+        // Negrito e centralizado
+        oSheet:SetFontBold( 1, 1, 1, 2, .T. )
+        oSheet:SetAlignment( 1, 1, 1, 2, EXCEL_ALIGN_CENTER )
+        oSheet:SetBackColor( 1, 1, 1, 2, RGB(200,200,200) ) // Cinza no cabeçalho
+    endif 
+
+    // escreve os dados 
+
+    oSheet:Write(nLastRow, 1, cEmail)
+    oSheet:Write(nLastRow, 2, cCep)
+
+    oSheet:AutoFit(1,1)
+    oSheet:AutoFit(1,2)
+
+    oExcel:SaveAs(cFileName)
+    oExcel:Close()
 
 
 Return return_var
@@ -80,9 +104,10 @@ User Function zGETSA1()
             oJson := JsonDecode(oHTTP:cContent)
             
             if oJson:GetJsonObjet('error'):
-                aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias)->NOME})
+                aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
 
             FreeObj(oJson)
+        db
     end
 
 Return aECeps
@@ -132,9 +157,11 @@ User Function zGETSA2()
 
         if oHTTP:nStatusCode == 200
             oJson := JsonDecode(oHTTP:cContent)
-            
-            
 
+            if oJson:GetJsonObjet('erro'):
+                aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
+
+            FreeObj(oJson)
     end
 Return 
 
@@ -183,8 +210,9 @@ User Function zGETSA3()
         if oHTTP:nStatusCode == 200
             oJson := JsonDecode(oHTTP:cContent)
             
-            
-
+            if oJson:=GetJsonObjet('erro'):
+                aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
+            FreeObj(oJson)
     end
 Return 
 
@@ -233,7 +261,8 @@ User Function zGETSA4()
         if oHTTP:nStatusCode == 200
             oJson := JsonDecode(oHTTP:cContent)
             
-            
-
+            if oJson:GetJsonObjet('erro'):
+                aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
+            FreeObj(oJson)
     end
 Return 
