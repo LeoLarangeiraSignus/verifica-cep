@@ -89,10 +89,11 @@ User Function zGETSA1()
     cQry1 += ENTER + "SA1.A1_CEP AS CEP, SA1.A1_EMAIL AS EMAIL , SA1.A1_NOME AS NOME"
     cQry1 += ENTER + "FROM " +RetSqlName('SA1')+ " AS SA1"
     cQry1 += ENTER + "WHERE"
-    cQry1 += ENTER + "SA1.A1_CEP <> ''"
+    cQry1 += ENTER + "SA1.D_E_L_E_T_ <> '*'"
+    cQry1 += ENTER + "AND SA1.A1_MSBLQL <> '1'"
+    cQry1 += ENTER + "AND SA1.A1_CEP <> ''"
     cQry1 += ENTER + "AND SA1.A1_CEP <> '00000000'"
-    cQry1 += ENTER + "AND SA1.D_E_L_E_T_ <> '*'"
-    TCQUERY cQry1 NEW ALIAS &cAlias1
+    TCQUERY cQry1 NEW ALIAS &cAlias1    
 
     (cAlias1)->(DbGoTop())
 
@@ -144,9 +145,10 @@ User Function zGETSA2()
     cQry2 += ENTER + "SA2.A2_CEP, SA2.A2_EMAIL, SA2.A2_NOME"
     cQry2 += ENTER + "FROM " +RetSqlName('SA2')+ " AS SA2"
     cQry2 += ENTER + "WHERE"
-    cQry2 += ENTER + "SA2.A2_CEP <> ''"
+    cQry2 += ENTER + "SA2.D_E_L_E_T_ <> '*'"
+    cQry2 += ENTER + "AND SA2.A2_CEP <> ''"
     cQry2 += ENTER + "AND SA2.A2_CEP <> '00000000'"
-    cQry2 += ENTER + "AND SA2.D_E_L_E_T_ <> '*'"
+    cQry2 += ENTER + "AND SA2.A2_MSBLQL <> '1'"
     TCQUERY cQry2 NEW ALIAS &cAlias2
 
     (cAlias2)->(DbGoTop())
@@ -196,9 +198,10 @@ User Function zGETSA3()
     cQry3 += ENTER + "SA3.A3_CEP, SA3.A3_EMAIL, SA3.A3_NOME"
     cQry3 += ENTER + "FROM " +RetSqlName('SA3')+ " AS SA3"
     cQry3 += ENTER + "WHERE"
-    cQry3 += ENTER + "SA3.A3_CEP <> ''"
+    cQry3 += ENTER + "SA3.D_E_L_E_T_ <> '*'"
+    cQry3 += ENTER + "AND SA3.A3_MSBLQL <> '1'"
+    cQry3 += ENTER + "AND SA3.A3_CEP <> ''"
     cQry3 += ENTER + "AND SA3.A3_CEP <> '00000000'"
-    cQry3 += ENTER + "AND SA3.D_E_L_E_T_ <> '*'"
     TCQUERY cQry3 NEW ALIAS &cAlias3
 
     (cAlias3)->(DbGoTop())
