@@ -21,7 +21,6 @@ def verifica_cep(ceps):
                     "SA1", cep, email, nome, "Formato Válido, porém CEP inexistente"
                 )
         else:
-            print(response)
             cria_excel("SA1", cep, email, nome, "Formato inválido")
 
     except requests.RequestException as e:

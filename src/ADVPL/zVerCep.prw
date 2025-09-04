@@ -112,9 +112,8 @@ User Function zGETSA1()
 			if oJson:GetJsonObjet('error'):
 
 				aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
-                u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Válido, porém CEP inexistente")
+                u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente",/*Fname = SA1*/ 'SA1')
 				FreeObj(oJson)
-				db
 			end
 
         else:
@@ -123,7 +122,9 @@ User Function zGETSA1()
             u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Inválido")
         
         endif
-            
+		(cAlias1)->(dbSkip())
+    EndDo
+	(cAlias1)->(dbCloseArea())   
 	Return aECeps 
 
 
@@ -178,7 +179,6 @@ User Function zGETSA2()
 				aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
                 u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME, "Formato Válido, porém CEP inexistente")
 				FreeObj(oJson)
-				db
 			end
 
         else:
@@ -187,7 +187,9 @@ User Function zGETSA2()
             u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Inválido")
         
         endif
-            
+		(cAlias2)->(DbSkip())
+     EndDo
+	 (cAlias2)->(dbCloseArea())
 	Return aECeps 
 
 
@@ -239,8 +241,13 @@ User Function zGETSA3()
 			if oJson:=GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
 				FreeObj(oJson)
-			end
-			Return
+			endif
+		endif
+		(cAlias3)->(DbSkip())
+	EndDo
+	(cAlias3)->(dbCloseArea())
+
+Return
 
 
 /*/{Protheus.doc} zGETSA4
@@ -290,5 +297,13 @@ User Function zGETSA4()
 			if oJson:GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
 				FreeObj(oJson)
-			end
-			Return
+			endif
+		elseif oHTTP:nStatusCode == 400: 
+			oJson := JsonDecode(oHTTP:cContent) 
+			
+			
+		endif
+		(cAlias3)->(DbSkip())
+	EndDo
+	(cAlias3)->(dbCloseArea())
+Return
