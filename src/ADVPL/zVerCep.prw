@@ -1,6 +1,5 @@
 #include 'protheus.ch'
 #Include 'TOTVS.ch'
-#include 'Http.ch'
 
 ENTER := CHAR(10) + CHAR(13)
 
