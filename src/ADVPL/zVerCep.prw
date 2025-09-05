@@ -174,17 +174,17 @@ User Function zGETSA2()
 		if oHTTP:nStatusCode == 200
 			oJson := JsonDecode(oHTTP:cContent)
 
-			if oJson:GetJsonObjet('error'):
+			if oJson:GetJsonObjet('error')
 
 				aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
-                u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME, "Formato Válido, porém CEP inexistente")
+                u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME,/*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/ 'SA2')
 				FreeObj(oJson)
 			end
 
-        else:
+        else
             oJson := JsonDecode(oHTTP:cContent)
             aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
-            u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Inválido")
+            u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA2')
         
         endif
 		(cAlias2)->(DbSkip())
@@ -240,9 +240,15 @@ User Function zGETSA3()
 
 			if oJson:=GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
+				u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA3')
 				FreeObj(oJson)
 			endif
+		else
+			u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA3')
+			FreeObj(oJson)
+
 		endif
+
 		(cAlias3)->(DbSkip())
 	EndDo
 	(cAlias3)->(dbCloseArea())
@@ -296,14 +302,16 @@ User Function zGETSA4()
 
 			if oJson:GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
+				u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME,/*Motivo*/"Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
 				FreeObj(oJson)
 			endif
-		elseif oHTTP:nStatusCode == 400: 
+		else 
 			oJson := JsonDecode(oHTTP:cContent) 
-			
-			
+			aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
+			u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
+			FreeObj(oJson)
 		endif
-		(cAlias3)->(DbSkip())
+		(cAlias4)->(DbSkip())
 	EndDo
-	(cAlias3)->(dbCloseArea())
+	(cAlias4)->(dbCloseArea())
 Return
