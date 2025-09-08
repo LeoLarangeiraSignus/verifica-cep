@@ -101,8 +101,8 @@ User Function zGETSA1()
 	(cAlias1)->(DbGoTop())
 
 	while (cAlias1)->(!Eof())
-		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		cResult := HttpGet(cUrl)
+		cURL := 'https://viacep.com.br/ws/'+(cAlias1)->CEP+'/json/'
+		cResult := HttpGet(cURL)
 
 		if cResult:nStatusCode == 200
 			jDados := JsonDecode(cResult:cContent)
@@ -164,8 +164,8 @@ User Function zGETSA2()
 	(cAlias2)->(DbGoTop())
 
 	while (cAlias2)->(!Eof())
-		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		cResultado := HttpGet(cUrl)
+		cURL := 'https://viacep.com.br/ws/'+(cAlias2)->CEP+'/json/'
+		cResultado := HttpGet(cURL)
 
 		if cResultado:nStatusCode == 200
 			jDados := JsonDecode(cResultado:cContent)
@@ -214,7 +214,7 @@ User Function zGETSA3()
 
 	cAlias3 := GetNextAlias()
 	cQry3 := "SELECT TOP 10 DISTINCT"
-	cQry3 += ENTER + "SA3.A3_CEP, SA3.A3_EMAIL, SA3.A3_NOME"
+	cQry3 += ENTER + "SA3.A3_CEP AS CEP, SA3.A3_EMAIL AS EMAIL, SA3.A3_NOME AS NOME"
 	cQry3 += ENTER + "FROM " +RetSqlName('SA3')+ " AS SA3"
 	cQry3 += ENTER + "WHERE"
 	cQry3 += ENTER + "SA3.D_E_L_E_T_ <> '*'"
@@ -226,15 +226,15 @@ User Function zGETSA3()
 	(cAlias3)->(DbGoTop())
 
 	while (cAlias3)->(!Eof())
-		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		cResultado := HttpGet(cUrl)
+		cURL := 'https://viacep.com.br/ws/'+(cAlias3)->CEP+'/json/'
+		cResultado := HttpGet(cURL)
 
 		if cResultado:nStatusCode == 200
 			jDados := JsonDecode(cResultado:cContent)
 
 			if jDados:=GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
-				u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA3')
+				u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA3')
 			endif
 		else
 			u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA3')
@@ -274,7 +274,7 @@ User Function zGETSA4()
 	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
 	cQry4 := "SELECT TOP 10 DISTINCT"
-	cQry4 += ENTER + "SA4.A4_CEP, SA4.A4_EMAIL, SA4.A4_NOME, SA4.COMPLEM"
+	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
 	cQry4 += ENTER + "FROM " +RetSqlName('SA4')+ " AS SA4"
 	cQry4 += ENTER + "WHERE"
 	cQry4 += ENTER + "SA4.A4_CEP <> ''"
@@ -285,8 +285,8 @@ User Function zGETSA4()
 	(cAlias4)->(DbGoTop())
 
 	while (cAlias4)->(!Eof())
-		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		cResultado := HttpGet(cUrl)
+		cURL := 'https://viacep.com.br/ws/'+(cAlias4)->A4_CEP+'/json/'
+		cResultado := HttpGet(cURL)
 
 		if cResultado:nStatusCode == 200
 			jDados := JsonDecode(cResultado:cContent)

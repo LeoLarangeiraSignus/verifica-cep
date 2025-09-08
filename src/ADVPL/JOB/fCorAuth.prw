@@ -2,7 +2,16 @@
 #Include 'TbiConn.ch'
 #Include 'TopConn.ch'
 
+/*/{Protheus.doc} JBTKNCOR
+Geração de um novo token a cada 24hrs para o consumo da API dos Meus Correios 
 
+@type Function
+@version 1.0
+@author leonardo.larangeira
+@since 08/09/2025
+@history 08/09/2025, leonardo.larangeira, Criação do Job para atualizar o token diariamente.
+/*/
+/***************************************************************************/
 
 User Function JBTKNCOR()
     Local cToken := AllTrim(GetMv('ZZ_TKNCOR')) // Acessa a variavel que contém o Token que não expira
@@ -14,6 +23,11 @@ User Function JBTKNCOR()
 
     Local cRetorno := ""
     Local jResultado 
+    
+    
+    PREPARE ENVIRONMENT EMPRESA "01" FILIAL "01" MODULO "FAT"
+    
+    MsgInfo('Gerando um novo token para a consumo da API Meus Correios </br> TOKEN ANTIGO: ' +cExpTkn )
     
     //Define os Headers
     HttpClearHeaders()
@@ -27,4 +41,14 @@ User Function JBTKNCOR()
 
     cRetorno += HttpPost(cUrl, cBody, "application/json" )
 
-    jResultado := oJson := JsonDecode(oHTTP:cContent)
+    jResultado := JsonDecode(oHTTP:cContent)
+    if !Empty(jResultado:GetJsonObject('Token'))
+        PutMv("ZZ_EXPTKN", jResultado:GetJsonObject('Token'))
+    else
+        MsgAlert('Não foi possível acessar o token.')
+    endif
+
+    FreeObj(jResultado)
+
+    RESET ENVIRONMENT
+Return 
