@@ -22,7 +22,7 @@ User Function JBTKNCOR()
     Local cUrl := "" // Url para gerar um novo token
 
     Local cRetorno := ""
-    Local jResultado 
+    Local jResultado AS Object
     
     
     PREPARE ENVIRONMENT EMPRESA "01" FILIAL "01" MODULO "FAT"
