@@ -77,10 +77,9 @@ Return return_var
 User Function zGETSA1()
 
 	Local cURL := ''
-	Local nT := 0
 	Local aCEPs := {}
 	Local aECeps := {}
-	Local oHTTP := HttpGet(cUrl)
+	Local cResult := ""
 
 	Local jDados
 
@@ -103,20 +102,20 @@ User Function zGETSA1()
 
 	while (cAlias1)->(!Eof())
 		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		oHTTP := HttpGet(cUrl)
+		cResult := HttpGet(cUrl)
 
-		if oHTTP:nStatusCode == 200
-			oJson := JsonDecode(oHTTP:cContent)
+		if cResult:nStatusCode == 200
+			jDados := JsonDecode(cResult:cContent)
 
-			if oJson:GetJsonObjet('error'):
+			if jDados:GetJsonObjet('error'):
 
 				aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
                 u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente",/*Fname = SA1*/ 'SA1')
-				FreeObj(oJson)
+				FreeObj(jDados)
 			end
 
         else:
-            oJson := JsonDecode(oHTTP:cContent)
+            jDados := JsonDecode(cResult:cContent)
             aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
             u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Inválido")
         
@@ -142,10 +141,8 @@ User Function zGETSA1()
 /*/
 User Function zGETSA2()
 	Local cURL := ''
-	Local nT := 0
-	Local aCEPs := {}
 	Local aECeps := {}
-	Local oHTTP := HttpGet(cUrl)
+	Local cResultado := ""
 
 	Local jDados
 
@@ -168,24 +165,24 @@ User Function zGETSA2()
 
 	while (cAlias2)->(!Eof())
 		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		oHTTP := HttpGet(cUrl)
+		cResultado := HttpGet(cUrl)
 
-		if oHTTP:nStatusCode == 200
-			oJson := JsonDecode(oHTTP:cContent)
+		if cResultado:nStatusCode == 200
+			jDados := JsonDecode(cResultado:cContent)
 
-			if oJson:GetJsonObjet('error')
+			if jDados:GetJsonObjet('error')
 
 				aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
                 u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME,/*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/ 'SA2')
-				FreeObj(oJson)
 			end
 
         else
-            oJson := JsonDecode(oHTTP:cContent)
-            aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
-            u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA2')
+            jDados := JsonDecode(cResultado:cContent)
+            aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
+            u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA2')
         
         endif
+		FreeObj(jDados)
 		(cAlias2)->(DbSkip())
      EndDo
 	 (cAlias2)->(dbCloseArea())
@@ -206,10 +203,8 @@ User Function zGETSA2()
 /*/
 User Function zGETSA3()
 	Local cURL := ''
-	Local nT := 0
-	Local aCEPs := {}
 	Local aECeps := {}
-	Local oHTTP := HttpGet(cUrl)
+	Local cResultado := ""
 
 	Local jDados
 
@@ -232,22 +227,21 @@ User Function zGETSA3()
 
 	while (cAlias3)->(!Eof())
 		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		oHTTP := HttpGet(cUrl)
+		cResultado := HttpGet(cUrl)
 
-		if oHTTP:nStatusCode == 200
-			oJson := JsonDecode(oHTTP:cContent)
+		if cResultado:nStatusCode == 200
+			jDados := JsonDecode(cResultado:cContent)
 
-			if oJson:=GetJsonObjet('erro'):
+			if jDados:=GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
 				u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA3')
-				FreeObj(oJson)
 			endif
 		else
 			u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA3')
-			FreeObj(oJson)
 
 		endif
 
+		FreeObj(jDados)
 		(cAlias3)->(DbSkip())
 	EndDo
 	(cAlias3)->(dbCloseArea())
@@ -268,11 +262,9 @@ Return
 @see (links_or_references)
 /*/
 User Function zGETSA4()
-	Local cURL := ''
-	Local nT := 0
-	Local aCEPs := {}
+	Local cURL := ""
 	Local aECeps := {}
-	Local oHTTP := HttpGet(cUrl)
+	Local cResultado := ""
 
 	Local jDados
 
@@ -294,22 +286,23 @@ User Function zGETSA4()
 
 	while (cAlias4)->(!Eof())
 		cUrl := 'https://viacep.com.br/ws/'+CEP+'/json/'
-		oHTTP := HttpGet(cUrl)
+		cResultado := HttpGet(cUrl)
 
-		if oHTTP:nStatusCode == 200
-			oJson := JsonDecode(oHTTP:cContent)
+		if cResultado:nStatusCode == 200
+			jDados := JsonDecode(cResultado:cContent)
 
-			if oJson:GetJsonObjet('erro'):
+			if jDados:GetJsonObjet('erro'):
 				aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
 				u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME,/*Motivo*/"Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
-				FreeObj(oJson)
+				
 			endif
 		else 
-			oJson := JsonDecode(oHTTP:cContent) 
+		
 			aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
 			u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
-			FreeObj(oJson)
+
 		endif
+		FreeObj(jDados)
 		(cAlias4)->(DbSkip())
 	EndDo
 	(cAlias4)->(dbCloseArea())
