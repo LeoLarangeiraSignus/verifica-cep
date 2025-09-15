@@ -1,7 +1,7 @@
 #include 'protheus.ch'
 #Include 'TOTVS.ch'
 
-ENTER := CHAR(10) + CHAR(13)
+#DEFINE ENTER := CHAR(10) + CHAR(13)
 
 //verifica CEP 
 
