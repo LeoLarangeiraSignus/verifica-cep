@@ -1,7 +1,8 @@
 #include 'protheus.ch'
 #Include 'TOTVS.ch'
+#Include "TopConn.ch"
 
-#DEFINE ENTER := CHAR(10) + CHAR(13)
+#DEFINE ENTER CHAR(13) + CHAR(10)
 
 //verifica CEP 
 
@@ -85,12 +86,12 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	if cResult:nStatusCode == 200
 		jDados := JsonDecode(cResult:cContent)
 
-		if jDados:GetJsonObject('error'):
+		if jDados:GetJsonObject('error')
 			u_rErCeps(cEmail, cCEP, cNome,"Formato Válido, porém CEP inexistente", cTNome)
 			FreeObj(jDados)
 		endif
 
-	else:
+	else
 		jDados := JsonDecode(cResult:cContent)
 		u_rErCeps(cEmail, cCEP, cNome,, "Formato Inválido")
         
@@ -114,20 +115,11 @@ Return cResult
 @see (links_or_references)
 /*/
 User Function zGETSA1()
-
-	Local cURL := ''
-	Local aCEPs := {}
-	Local aECeps := {}
-	Local cResult := ""
-
-	Local jDados AS JSON 
-	
-
-	Local cQry1 := ""
+    Local cQry1 := ""
 	Local cAlias1 := ""
 
 
-	cAlias1 := GetNextAlias()
+	cAlias1	:= GetNextAlias()
 	cQry1 := "SELECT TOP 10 DISTINCT"
 	cQry1 += ENTER + "SA1.A1_CEP AS CEP, SA1.A1_EMAIL AS EMAIL , SA1.A1_NOME AS NOME"
 	cQry1 += ENTER + "FROM " +RetSqlName('SA1')+ " AS SA1"
@@ -136,6 +128,7 @@ User Function zGETSA1()
 	cQry1 += ENTER + "AND SA1.A1_MSBLQL <> '1'"
 	cQry1 += ENTER + "AND SA1.A1_CEP <> ''"
 	cQry1 += ENTER + "AND SA1.A1_CEP <> '00000000'"
+
 	TCQUERY cQry1 NEW ALIAS &cAlias1
 
 	(cAlias1)->(DbGoTop())
@@ -146,7 +139,7 @@ User Function zGETSA1()
 		(cAlias1)->(dbSkip())
     EndDo
 	(cAlias1)->(dbCloseArea())   
-Return aECeps 
+Return  
 
 
 
@@ -163,12 +156,6 @@ Return aECeps
 @see (links_or_references)
 /*/
 User Function zGETSA2()
-	Local cURL := ''
-	Local aECeps := {}
-	Local cResultado := ""
-
-	Local jDados
-
 	Local cQry2 := ""
 	Local cAlias2 := ""
 
@@ -192,7 +179,7 @@ User Function zGETSA2()
 		(cAlias2)->(DbSkip())
      EndDo
 	 (cAlias2)->(dbCloseArea())
-	Return aECeps 
+Return  
 
 
 /*/{Protheus.doc} zGETSA3
@@ -208,11 +195,6 @@ User Function zGETSA2()
 @see (links_or_references)
 /*/
 User Function zGETSA3()
-	Local cURL := ''
-	Local aECeps := {}
-	Local cResultado := ""
-
-	Local jDados
 
 	Local cQry3 := ""
 	Local cAlias3 := ""
@@ -254,11 +236,6 @@ Return
 @see (links_or_references)
 /*/
 User Function zGETSA4()
-	Local cURL := ""
-	Local aECeps := {}
-	Local cResultado := ""
-
-	Local jDados
 
 	Local cQry4 := ""
 	Local cAlias4 := ""
