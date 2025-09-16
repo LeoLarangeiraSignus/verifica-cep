@@ -3,17 +3,33 @@
 
 #DEFINE ENTER := CHAR(10) + CHAR(13)
 
-// recuperando dados do banco para a criação da etiqueta, retorna o objeto em string.
+
+User Function fOPSer()
+
+return 
+
+
+
+
+
+
+// recuperando dados do banco para a criação do JSON com dados para a pré-postagem, retorna o objeto em string.
 /*/{Protheus.doc} fEtiPre
-(long_description)
+Função responsável por recuperar os dados do banco para criação do JSON da pré-postagem, 
+retornando o objeto como uma string JSON.
 @type user function
 @author user
 @since 08/09/2025
 @version version
-@param param_name, param_type, param_descr
-@return return_var, return_type, return_description
+@param  cCodCli, character, Código do cliente para o qual a pré-postagem será gerada.
+@param  cCodNF,  character, Código ou número da Nota Fiscal relacionada.
+@param  cPedNum, character, Número do pedido vinculado à etiqueta.
+@return cPayLoad, character, Objeto com os dados necessários para a criação da pré-postagem em formato de string.
 @example
-(examples)
+    // Exemplo de uso:
+    cEtiqueta := fEtiPre("000123", "NF000456", "PED000789")
+    ConOut(cEtiqueta) // Exibe a string retornada no console
+
 @see (links_or_references)
 /*/
 User Function fEtiPre(cCodCli, cCodNF,cPedNum)
@@ -22,6 +38,8 @@ User Function fEtiPre(cCodCli, cCodNF,cPedNum)
 	Local cQry1 := ""
 	Local cAlias1 := ""
 	Local cPayLoad AS CHARACTER
+	Local cExpTkn := AllTrim(GetMv('ZZ_EXPTKN'))
+	Local cCodPos := AllTrim(GetMv('ZZ_CODPOST'))
 	//pensando seriamente em criar as funções que buscam esses valores ali para cima, igual o zPropag
 	Local aOpcSer := {}
 	Local aOpcObj := {}
@@ -44,22 +62,18 @@ User Function fEtiPre(cCodCli, cCodNF,cPedNum)
 	cQry1 += ENTER + "    SA1.A1_CEP /*dstxcep*/,"
 	cQry1 += ENTER + "    SA1.A1_EMAIL /*dstxemail*/,"
 	cQry1 += ENTER + "    SA1.A1_TEL /*dstxcel*/,"
-	cQry1 += ENTER + "    SF2.F2_DOC /*dstxnfi*/,"
-	cQry1 += ENTER + "CASE"
-	cQry1 += ENTER + "    WHEN SZ6.Z6_AR = 'S' THEN 'AR'"
-	cQry1 += ENTER + "    ELSE"
-	cQry1 += ENTER + "END Z6_AR"
+	cQry1 += ENTER + "    SF2.F2_DOC /*dstxnfi*/"
 	cQry1 += ENTER + "FROM"
-	cQry1 += ENTER + '    ' + RetSqlName('SA1') + 'AS SA1'
+	cQry1 += ENTER + ""+ RetSqlName('SA1') + "AS SA1"
 	cQry1 += ENTER + "    INNER JOIN " +RetSqlName('SC5')+ "AS SC5 ON SC5.D_E_L_E_T_ <> '*'"
 	cQry1 += ENTER + "    AND SC5.C5_CLIENTE = SA1.A1_COD"
-	cQry1 += ENTER + "    INNER JOIN " +RetSqlName('SC5')+ "AS SF2 ON SF2.D_E_L_E_T_ <> '*'"
+	cQry1 += ENTER + "    INNER JOIN " +RetSqlName('SF2')+ "AS SF2 ON SF2.D_E_L_E_T_ <> '*'"
 	cQry1 += ENTER + "    AND SF2.F2_CLIENT = SA1.A1_COD"
 	cQry1 += ENTER + "WHERE"
 	cQry1 += ENTER + "SA1.A1_MSBLQL <> '1'"
-	cQry1 += ENTER + "AND SF2.F2_CLIENTE = " + "'"+cCodCli+"'"
-	cQry1 += ENTER + "AND SC5.C5_NUM = " + "'"+cPedNum+"'"
-	cQry1 += ENTER + "AND SF2.F2_DOC = " + "'"+cCodNF+"'"
+	cQry1 += ENTER + "AND SF2.F2_CLIENTE = '"+cCodCli+"'"
+	cQry1 += ENTER + "AND SC5.C5_NUM = '"+cPedNum+"'"
+	cQry1 += ENTER + "AND SF2.F2_DOC = '"+cCodNF+"'"
 
 	TCQUERY cQry1 NEW ALIAS &cAlias1
 
@@ -69,12 +83,13 @@ User Function fEtiPre(cCodCli, cCodNF,cPedNum)
 		//criando a string json com os dados que temos acesso
 		cPayLoad := "{"
 		cPayLoad += ENTER + '"parmIn" : {'
-		cPayLoad += ENTER '                "Token": "'+/*ZZ_TOKEN*/+","                                                             /*paramatro obrigatório*/
-		cPayLoad += ENTER '                 "dstxrmtcod": "'+/**/+'",'                      /*Código do remetente*/                 /*paramatro obrigatório*/
-		cPayLoad += ENTER '                 "dstxcar": "'+/*ZZ_CARTPOST*/+'",'              /*Cartão de Postagem*/                  /*paramatro obrigatório*/
+		cPayLoad += ENTER '                "Token": "'+cExpTkn+","                                                             /*paramatro obrigatório*/
+		cPayLoad += ENTER '                 "dstxrmtcod": "1",'                      		/*Código do remetente*/                 /*paramatro obrigatório*/
+		cPayLoad += ENTER '                 "dstxcar": "''",'              /*Cartão de Postagem*/                  /*paramatro obrigatório*/
 		cPayLoad += ENTER '                 "dstnom": "' +(cAlias1)->SA1.A1_NOME+ '",'      /*Nome do destinatario */               /*paramatro obrigatório*/
 		cPayLoad += ENTER '                 "dstend":"'+(cAlias1)->SA1.A1_END+'", '         /*Endereço do Destinatário*/            /*paramatro obrigatório*/
 		cPayLoad += ENTER '                 "dstendnum":"'+(cAlias1)->SA1.A1_ZZNUM+'", '    /*Número do destinatário*/              /*paramatro obrigatório*/
+		cPayLoad += ENTER '					"dstcpl":" '++'",'
 		cPayLoad += ENTER '                 "dstcpl":"'+(cAlias1)->SA1.A1_COMPENT+'", '     /*Complemento do destinatario*/         /*paramatro obrigatório*/
 		cPayLoad += ENTER '                 "dstbai":"'+(cAlias1)->SA1.A1_BAIRRO+'", '      /*Bairro do destinatario*/              /*paramatro obrigatório*/
 		cPayLoad += ENTER '                 "dstcid":"'+(cAlias1)->SA1.A1_MUN+ '",'         /*Municipio do destinatario*/           /*paramatro obrigatório*/
@@ -116,4 +131,4 @@ User Function fEtiPre(cCodCli, cCodNF,cPedNum)
 
 	EndDo
 
-Return return_var
+Return cPayLoad

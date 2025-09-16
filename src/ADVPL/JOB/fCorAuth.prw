@@ -9,12 +9,12 @@ GeraÃ§Ã£o de um novo token a cada 24hrs para o consumo da API dos Meus Correios
 @version 1.0
 @author leonardo.larangeira
 @since 08/09/2025
-@history 08/09/2025, leonardo.larangeira, Criação do Job para atualizar o token diariamente.
+@history 08/09/2025, leonardo.larangeira, criação do Job para atualizar o token diariamente.
 /*/
 /***************************************************************************/
 
 User Function JBTKNCOR()
-    Local cToken := AllTrim(GetMv('ZZ_TKNCOR')) // Acessa a variavel que contem o Token que não expira
+    Local cToken := AllTrim(GetMv('ZZ_TKNCOR')) // Acessa a variavel que contem o Token que nÃ£o expira
     Local cCodPos := AllTrim(GetMv('ZZ_CODPOST')) // Acessa a variavel que contem o codigo postal da empresa
     Local cExpTkn := AllTrim(GetMv('ZZ_EXPTKN')) // Pega o valor atual do Token que expira a cada 24hrs 
     Local cBody AS CHARACTER 
@@ -45,7 +45,7 @@ User Function JBTKNCOR()
     if !Empty(jResultado:GetJsonObject('Token'))
         PutMv("ZZ_EXPTKN", jResultado:GetJsonObject('Token'))
     else
-        MsgAlert('Não foi possivel acessar o token.')
+        MsgAlert('NÃ£o foi possivel acessar o token.')
     endif
 
     FreeObj(jResultado)
