@@ -62,6 +62,45 @@ Static Function rErCeps(cEmail, cCep, cNome, cMotivo, cFName)
 Return return_var
 
 
+
+/*/{Protheus.doc} fGetCEP
+(long_description)
+@type user function
+@author user
+@since 16/09/2025
+@version version
+@param param_name, param_type, param_descr
+@return return_var, return_type, return_description
+@example
+(examples)
+@see (links_or_references)
+/*/
+User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
+	Local cURL := 'https://viacep.com.br/ws/'+cCEP+'/json/'
+	Local jDados AS JSON 
+	Local cResult := ""
+	
+	
+	cResult := HttpGet(cURL)
+	if cResult:nStatusCode == 200
+		jDados := JsonDecode(cResult:cContent)
+
+		if jDados:GetJsonObject('error'):
+			u_rErCeps(cEmail, cCEP, cNome,"Formato Válido, porém CEP inexistente", cTNome)
+			FreeObj(jDados)
+		endif
+
+	else:
+		jDados := JsonDecode(cResult:cContent)
+		u_rErCeps(cEmail, cCEP, cNome,, "Formato Inválido")
+        
+    endif
+	
+Return cResult
+
+
+
+
 /*/{Protheus.doc} zGETSA1
 (Função para pegar todos os CEPS da SA1)
 @type user function
@@ -81,7 +120,8 @@ User Function zGETSA1()
 	Local aECeps := {}
 	Local cResult := ""
 
-	Local jDados
+	Local jDados AS JSON 
+	
 
 	Local cQry1 := ""
 	Local cAlias1 := ""
@@ -101,29 +141,12 @@ User Function zGETSA1()
 	(cAlias1)->(DbGoTop())
 
 	while (cAlias1)->(!Eof())
-		cURL := 'https://viacep.com.br/ws/'+(cAlias1)->CEP+'/json/'
-		cResult := HttpGet(cURL)
-
-		if cResult:nStatusCode == 200
-			jDados := JsonDecode(cResult:cContent)
-
-			if jDados:GetJsonObjet('error'):
-
-				aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
-                u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente",/*Fname = SA1*/ 'SA1')
-				FreeObj(jDados)
-			end
-
-        else:
-            jDados := JsonDecode(cResult:cContent)
-            aAdd(aECeps, {(cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME})
-            u_rErCeps((cAlias1)-> EMAIL , (cAlias1)->CEP, (cAlias1)->NOME, "Formato Inválido")
-        
-        endif
+		//cCEP,cEmail,cNome ,cTNome
+		u_fGetCEP((cAlias1)->A1_CEP, (cAlias1)->A1_EMAIL, (cAlias1)->A1_NOME, 'SA1' )
 		(cAlias1)->(dbSkip())
     EndDo
 	(cAlias1)->(dbCloseArea())   
-	Return aECeps 
+Return aECeps 
 
 
 
@@ -163,26 +186,9 @@ User Function zGETSA2()
 
 	(cAlias2)->(DbGoTop())
 
+	//cCEP,cEmail,cNome ,cTNome
 	while (cAlias2)->(!Eof())
-		cURL := 'https://viacep.com.br/ws/'+(cAlias2)->CEP+'/json/'
-		cResultado := HttpGet(cURL)
-
-		if cResultado:nStatusCode == 200
-			jDados := JsonDecode(cResultado:cContent)
-
-			if jDados:GetJsonObjet('error')
-
-				aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
-                u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME,/*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/ 'SA2')
-			end
-
-        else
-            jDados := JsonDecode(cResultado:cContent)
-            aAdd(aECeps, {(cAlias2)->CEP, (cAlias2)->EMAIL, (cAlias2)->NOME})
-            u_rErCeps((cAlias2)-> EMAIL , (cAlias2)->CEP, (cAlias2)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA2')
-        
-        endif
-		FreeObj(jDados)
+		u_fGetCEP((cAlias2)->CEP,(cAlias2)-> EMAIL,(cAlias2)->NOME, 'SA2')
 		(cAlias2)->(DbSkip())
      EndDo
 	 (cAlias2)->(dbCloseArea())
@@ -224,24 +230,10 @@ User Function zGETSA3()
 	TCQUERY cQry3 NEW ALIAS &cAlias3
 
 	(cAlias3)->(DbGoTop())
-
+	//cCEP,cEmail,cNome ,cTNome
+	
 	while (cAlias3)->(!Eof())
-		cURL := 'https://viacep.com.br/ws/'+(cAlias3)->CEP+'/json/'
-		cResultado := HttpGet(cURL)
-
-		if cResultado:nStatusCode == 200
-			jDados := JsonDecode(cResultado:cContent)
-
-			if jDados:=GetJsonObjet('erro'):
-				aAdd(aECeps, {(cAlias3)->A3_CEP, (cAlias3)->A3_EMAIL, (cAlias3)->A3_NOME} )
-				u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA3')
-			endif
-		else
-			u_rErCeps((cAlias3)-> EMAIL , (cAlias3)->CEP, (cAlias3)->NOME,/*Motivo*/ "Formato Inválido", /*Tabela*/'SA3')
-
-		endif
-
-		FreeObj(jDados)
+		u_fGetCEP((cAlias3)->CEP, (cAlias3)-> EMAIL ,(cAlias3)->NOME, 'SA3')
 		(cAlias3)->(DbSkip())
 	EndDo
 	(cAlias3)->(dbCloseArea())
@@ -283,26 +275,9 @@ User Function zGETSA4()
 	TCQUERY cQry4 NEW ALIAS &cAlias4
 
 	(cAlias4)->(DbGoTop())
-
+	
 	while (cAlias4)->(!Eof())
-		cURL := 'https://viacep.com.br/ws/'+(cAlias4)->A4_CEP+'/json/'
-		cResultado := HttpGet(cURL)
-
-		if cResultado:nStatusCode == 200
-			jDados := JsonDecode(cResultado:cContent)
-
-			if jDados:GetJsonObjet('erro'):
-				aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
-				u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME,/*Motivo*/"Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
-				
-			endif
-		else 
-		
-			aAdd(aECeps, {(cAlias4)->A4_CEP,(cAlias4)->A4_EMAIL,(cAlias4)->A4_NOME,})
-			u_rErCeps((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, /*Motivo*/ "Formato Válido, porém CEP inexistente", /*Tabela*/'SA4')
-
-		endif
-		FreeObj(jDados)
+		u_fGetCEP((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, 'SA4')
 		(cAlias4)->(DbSkip())
 	EndDo
 	(cAlias4)->(dbCloseArea())
