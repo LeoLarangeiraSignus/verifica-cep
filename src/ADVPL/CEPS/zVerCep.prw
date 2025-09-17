@@ -81,7 +81,8 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local jDados AS JSON 
 	Local cResult := ""
 	
-	
+	//refazer isso aqui para ele realmente alimentar um dicionário de dados! Assim eu consigo passar ele direto para o Report
+	// fica bem mais fácil de ser lido. 
 	cResult := HttpGet(cURL)
 	if cResult:nStatusCode == 200
 		jDados := JsonDecode(cResult:cContent)
