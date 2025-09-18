@@ -27,7 +27,7 @@ Function CepsErr()
 
     Private cAlias1 := ""
     Private cNomeRel := FunName()
-    Private cTitulo := "CEP's errados"
+    Private cTitulo := "CEP's errados" + cDados[5]
     Private cDescrRel := "Contém todos os CEP's que não estão corretos"
     
 
@@ -90,7 +90,9 @@ Return
     @see (links_or_references)
 /*/
 Static Function reportDef()
-    
+    Local nLinha := 1 
+
+
     oReport := TReport():New(cNomeRel, cTitulo, , {|oReport| PrintReport(oReport)}, cDescrRel)
     oReport:SetLandScape()
     oReport:OPage:setPaperSize(9)
@@ -103,6 +105,15 @@ Static Function reportDef()
     oReport:nfontBody := 7 
     oReport:cfontBody := "Arial"
     oReport:SetLineHeight(50)
+
+    // TRCell():New(oSection, cCampo, cAlias, cTitulo, bFormula, nLargura, nTipo, nDecimais)
+    //                  ok      n       n       ok          ok      ok      ok         ok
+    TRCell():New(oSection, , , "EMAIL", {|| aDados[nLinha++]}, 30)
+    TRCell():New(oSection, , , "CEP", {|| aDados[nLinha++]}, 10)
+    TRCell():New(oSection, , , "NOME", {|| aDados[nLinha++]}, 30)
+    TRCell():New(oSection, , , "ERRO", {|| aDados[nLinha++]}, 30)
+
+    oBreak := TRBreak():New(oSection1, oSection1)
 
 
 Return 

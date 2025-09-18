@@ -80,6 +80,7 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local cURL := 'https://viacep.com.br/ws/'+cCEP+'/json/'
 	Local jDados AS JSON 
 	Local cResult := ""
+	Local aDados := {}
 	
 	//refazer isso aqui para ele realmente alimentar um dicionário de dados! Assim eu consigo passar ele direto para o Report
 	// fica bem mais fácil de ser lido. 
@@ -88,17 +89,19 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 		jDados := JsonDecode(cResult:cContent)
 
 		if jDados:GetJsonObject('error')
-			u_rErCeps(cEmail, cCEP, cNome,"Formato Válido, porém CEP inexistente", cTNome)
+			// u_rErCeps(cEmail, cCEP, cNome,"Formato Válido, porém CEP inexistente", cTNome)
+			aAdd(aDados, {{cEmail, cCep, cNome,"Formato Válido, porém CEP inexistente", cTNome }})
 			FreeObj(jDados)
 		endif
 
 	else
 		jDados := JsonDecode(cResult:cContent)
-		u_rErCeps(cEmail, cCEP, cNome,, "Formato Inválido")
+		aAdd(aDados, {{cEmail, cCep, cNome,"Formato Inválido", cTNome }})
+		// u_rErCeps(cEmail, cCEP, cNome,, "Formato Inválido")
         
     endif
 	
-Return cResult
+Return aDados
 
 
 
