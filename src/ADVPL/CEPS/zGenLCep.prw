@@ -72,7 +72,7 @@ Return
 @see (links_or_references)
 /*/
 User Function eErCeps(cEmail, cCep, cNome, cMotivo, cFName)
-
+    Local aDados := {}
 Return 
 
 
@@ -108,14 +108,60 @@ Static Function reportDef()
 
     // TRCell():New(oSection, cCampo, cAlias, cTitulo, bFormula, nLargura, nTipo, nDecimais)
     //                  ok      n       n       ok          ok      ok      ok         ok
-    TRCell():New(oSection, , , "EMAIL", {|| aDados[nLinha++]}, 30)
-    TRCell():New(oSection, , , "CEP", {|| aDados[nLinha++]}, 10)
-    TRCell():New(oSection, , , "NOME", {|| aDados[nLinha++]}, 30)
-    TRCell():New(oSection, , , "ERRO", {|| aDados[nLinha++]}, 30)
+    TRCell():New(oSection1, , , "EMAIL", {|| aDados[nLinha++]}, 30)
+    TRCell():New(oSection1, , , "CEP", {|| aDados[nLinha++]}, 10)
+    TRCell():New(oSection1, , , "NOME", {|| aDados[nLinha++]}, 30)
+    TRCell():New(oSection1, , , "ERRO", {|| aDados[nLinha++]}, 30)
 
-    oBreak := TRBreak():New(oSection1, oSection1)
+    // oBreak := TRBreak():New(oSection1, oSection1:Cell("EMAIL"),, .F.)
 
 
-Return 
 
+Return (oReport)
+
+
+/*/{Protheus.doc} PrintReport
+    (long_description)
+    @type  Static Function
+    @author user
+    @since 19/09/2025
+    @version version
+    @param param_name, param_type, param_descr
+    @return return_var, return_type, return_description
+    @example
+    (examples)
+    @see (links_or_references)
+/*/
+Static Function PrintReport(oReport)
+   // passar o array de aDados 
+    Local oSection1 := oReport:Section(1)
+    Local nRegs := 0 
+    Local nI := 1
+
+    Private lEndSection := .F.
+    Private lEndReport := .F.
+
+    oSection1:Init()
+    oSection:SetHeaderSection(.T.)
+
+    Count to nRegs 
+    oReport:SetMeter(nRegs)
+    
+    for nI := 1 to Len(aDados)
+        If oReport:Cancel()
+            Exit 
+        Endif
+
+        oSection1:Cell("EMAIL"):setValue(aDados[1])
+        oSection1:Cell("CEP"):setValue(aDados[2])
+        oSection1:Cell("NOME"):setValue(aDados[3])
+        oSection1:Cell("ERRO"):setValue(aDados[4])
+
+        oSection1:PrintLine()
+        
+        oReport:ThinLine()
+
+        oSection1:Finish()
+    next
+Return return_var
 
