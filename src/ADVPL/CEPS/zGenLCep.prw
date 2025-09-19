@@ -2,14 +2,14 @@
 #include 'TOTVS.ch'
 #include "TopConn.ch"
 
+/*
+Criar um if para verificar em qual planilha o resultado deve ser pego, SA1, A2, A3 E A4
 
 
+*/
 
 
-
-
-
-User /*/{Protheus.doc} CepsErr
+/*/{Protheus.doc} CepsErr
     (long_description)
     @type  Function
     @author user
@@ -21,7 +21,7 @@ User /*/{Protheus.doc} CepsErr
     (examples)
     @see (links_or_references)
     /*/
-Function CepsErr()
+User Function CepsErr()
     Private oReport
     Private oSection1
 
@@ -35,23 +35,6 @@ Function CepsErr()
     oReport:printDialog()
 
 Return 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -74,8 +57,6 @@ Return
 User Function eErCeps(cEmail, cCep, cNome, cMotivo, cFName)
     Local aDados := {}
 Return 
-
-
 
 /*/{Protheus.doc} reportDef
     (long_description)
@@ -108,6 +89,9 @@ Static Function reportDef()
 
     // TRCell():New(oSection, cCampo, cAlias, cTitulo, bFormula, nLargura, nTipo, nDecimais)
     //                  ok      n       n       ok          ok      ok      ok         ok
+    //                           cTitulo    cFormula, percorre o Array para os próximos valores.
+    //  {cEmail, cCep, cNome,"Formato Inválido"}
+    //   1         2    3       4                 
     TRCell():New(oSection1, , , "EMAIL", {|| aDados[nLinha++]}, 30)
     TRCell():New(oSection1, , , "CEP", {|| aDados[nLinha++]}, 10)
     TRCell():New(oSection1, , , "NOME", {|| aDados[nLinha++]}, 30)
