@@ -105,8 +105,8 @@ Static Function PrintReport(oReport)
     oSection1:Init()
     oSection:SetHeaderSection(.T.)
 
-    Count to nRegs 
-    oReport:SetMeter(nRegs)
+    Count to nRegs  // acredito que isso aqui não é tão bom 
+    oReport:SetMeter(nRegs) // igual ao de cima, não deve ser util no meu caso
     
     for nI := 1 to Len(aDados)
         If oReport:Cancel()
