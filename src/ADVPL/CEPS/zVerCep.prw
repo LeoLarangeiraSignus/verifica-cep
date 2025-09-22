@@ -88,18 +88,11 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	cResult := HttpGet(cURL)
 	jDados := oReq:FromJson(cResult)
 
-	if oReq["erro"] 
-		if jDados:GetJsonObject('error')
-			
-			FreeObj(jDados)
-		endif
-
-	else
-		jDados := JsonDecode(cResult:cContent)
-		aAdd(aDados, {{cEmail, cCep, cNome,"Formato Inválido", cTNome }})
-		
-        
+	if oReq["erro"] == "true"
+		aAdd(aDados, {{cEmail, cCep, cNome,"Formato Válido, porém CEP inexistente", cTNome }})
     endif
+
+	FreeObj(oReq)
 	
 Return aDados
 
@@ -121,13 +114,9 @@ Funcao para pegar todos os CEPS da SA1
 User Function zGETSA1()
     Local cQry1 := ""
 	Local cAlias1 := ""
-	// Local cCep := ""
-	// Local cEmail := ""
-	// Local cNome := ""
-
 
 	cAlias1	:= GetNextAlias()
-	cQry1 := "SELECT  TOP 10"
+	cQry1 := "SELECT DISTINCT TOP 10"
 	cQry1 += ENTER + "SA1.A1_CEP AS CEP, SA1.A1_EMAIL AS EMAIL , SA1.A1_NOME AS NOME"
 	cQry1 += ENTER + "FROM " + RetSqlName("SA1")+ " AS SA1"
 	cQry1 += ENTER + "WHERE"
@@ -141,8 +130,6 @@ User Function zGETSA1()
 	(cAlias1)->(DbGoTop())
 
 	while (cAlias1)->(!Eof())
-		//cCEP,cEmail,cNome ,cTNome
-		
 		u_fGetCEP((cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME, 'SA1' )
 		(cAlias1)->(dbSkip())
     EndDo
@@ -152,7 +139,7 @@ Return
 
 
 /*/{Protheus.doc} zGETSA2
-(Função para pegar todos os valores da SA2)
+Funcao para pegar todos os valores da SA2
 @type user function
 @author leonardo.larangeira
 @since 12/08/2025
@@ -169,14 +156,14 @@ User Function zGETSA2()
 
 
 	cAlias2 := GetNextAlias()
-	cQry2 := "SELECT TOP 10 "
-	cQry2 += ENTER + "SA2.A1_CEP AS CEP, SA2.A1_EMAIL AS EMAIL , SA2.A1_NOME AS NOME"
+	cQry2 := "SELECT DISTINCT TOP 10 "
+	cQry2 += ENTER + "SA2.A2_CEP AS CEP, SA2.A2_EMAIL AS EMAIL , SA2.A2_NOME AS NOME"
 	cQry2 += ENTER + "FROM " +RetSqlName('SA2')+ " AS SA2"
 	cQry2 += ENTER + "WHERE"
 	cQry2 += ENTER + "SA2.D_E_L_E_T_ <> '*'"
-	cQry2 += ENTER + "AND SA2.A1_MSBLQL <> '1'"
-	cQry2 += ENTER + "AND SA2.A1_CEP <> ''"
-	cQry2 += ENTER + "AND SA2.A1_CEP <> '00000000'"
+	cQry2 += ENTER + "AND SA2.A2_MSBLQL <> '1'"
+	cQry2 += ENTER + "AND SA2.A2_CEP <> ''"
+	cQry2 += ENTER + "AND SA2.A2_CEP <> '00000000'"
 	TCQUERY cQry2 NEW ALIAS &cAlias2
 
 	(cAlias2)->(DbGoTop())
@@ -191,7 +178,7 @@ Return
 
 
 /*/{Protheus.doc} zGETSA3
-(Função para pegar todos os valores da SA3)
+Funcao para pegar todos os valores da SA3
 @type user function
 @author leonardo.larangeira
 @since 12/08/2025
@@ -209,7 +196,7 @@ User Function zGETSA3()
 
 
 	cAlias3 := GetNextAlias()
-	cQry3 := "SELECT TOP 10 "
+	cQry3 := "SELECT DISTINCT TOP 10 "
 	cQry3 += ENTER + "SA3.A3_CEP AS CEP, SA3.A3_EMAIL AS EMAIL, SA3.A3_NOME AS NOME"
 	cQry3 += ENTER + "FROM " +RetSqlName('SA3')+ " AS SA3"
 	cQry3 += ENTER + "WHERE"
@@ -250,7 +237,7 @@ User Function zGETSA4()
 
 	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
-	cQry4 := "SELECT TOP 10 "
+	cQry4 := "SELECT DISTINCT TOP 10 "
 	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
 	cQry4 += ENTER + "FROM " +RetSqlName('SA4')+ " AS SA4"
 	cQry4 += ENTER + "WHERE"
@@ -262,7 +249,7 @@ User Function zGETSA4()
 	(cAlias4)->(DbGoTop())
 	
 	while (cAlias4)->(!Eof())
-		u_fGetCEP((cAlias4)-> EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, 'SA4')
+		u_fGetCEP((cAlias4)->EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, 'SA4')
 		(cAlias4)->(DbSkip())
 	EndDo
 	(cAlias4)->(dbCloseArea())
