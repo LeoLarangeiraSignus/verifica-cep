@@ -249,7 +249,7 @@ User Function zGETSA4()
 	(cAlias4)->(DbGoTop())
 	
 	while (cAlias4)->(!Eof())
-		u_fGetCEP((cAlias4)->EMAIL , (cAlias4)->CEP, (cAlias4)->NOME, 'SA4')
+		u_fGetCEP((cAlias4)->CEP , (cAlias4)->EMAIL, (cAlias4)->NOME, 'SA4')
 		(cAlias4)->(DbSkip())
 	EndDo
 	(cAlias4)->(dbCloseArea())
