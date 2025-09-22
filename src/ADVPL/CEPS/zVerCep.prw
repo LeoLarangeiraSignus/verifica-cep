@@ -25,8 +25,7 @@ User Function CepsErr()
     Private cAlias1 := ""
     Private cNomeRel := FunName()
     Private cTitulo := "CEP's errados" + cDados[5]
-	Private cPerg := Upper(Padr(cNomeRel, 10))
-    Private cDescrRel := "Contém todos os CEP's que não estão corretos"
+	Private cDescrRel := "Contém todos os CEP's que não estão corretos"
 
     oReport:= reportDef()
     oReport:printDialog()
@@ -49,7 +48,7 @@ Static Function reportDef()
     Local nLinha := 1 
 
 
-    oReport := TReport():New(cNomeRel, cTitulo, cPerg, {|oReport| PrintReport(oReport)}, cDescrRel)
+    oReport := TReport():New(cNomeRel, cTitulo,, {|oReport| PrintReport(oReport)}, cDescrRel)
     oReport:SetLandScape()
     oReport:OPage:setPaperSize(9)
     oReport:SetTotalLine(.F.)
@@ -93,20 +92,15 @@ Return (oReport)
 Static Function PrintReport(oReport)
    // passar o array de aDados 
     Local oSection1 := oReport:Section(1)
-    Local nRegs := 0 
     Local nI := 1
 	// Metodo para pegar as perguntas, aqui, nós vamos decidir qual vai ser a planinlha que será usada
-	Pergunte(cPerg, .F.)
-	
+		
 
     Private lEndSection := .F.
     Private lEndReport := .F.
 
     oSection1:Init()
     oSection:SetHeaderSection(.T.)
-
-    Count to nRegs  // acredito que isso aqui não é tão bom 
-    oReport:SetMeter(nRegs) // igual ao de cima, não deve ser util no meu caso
     
     for nI := 1 to Len(aDados)
         If oReport:Cancel()
@@ -202,14 +196,11 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local cResult := ""
 	Local aDados := {}
 	
-	//refazer isso aqui para ele realmente alimentar um dicionário de dados! Assim eu consigo passar ele direto para o Report
-	// fica bem mais fácil de ser lido. 
 	cResult := HttpGet(cURL)
 	if cResult:nStatusCode == 200
 		jDados := JsonDecode(cResult:cContent)
 
 		if jDados:GetJsonObject('error')
-			// u_rErCeps(cEmail, cCEP, cNome,"Formato Válido, porém CEP inexistente", cTNome)
 			aAdd(aDados, {{cEmail, cCep, cNome,"Formato Válido, porém CEP inexistente", cTNome }})
 			FreeObj(jDados)
 		endif
@@ -217,7 +208,7 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	else
 		jDados := JsonDecode(cResult:cContent)
 		aAdd(aDados, {{cEmail, cCep, cNome,"Formato Inválido", cTNome }})
-		// u_rErCeps(cEmail, cCEP, cNome,, "Formato Inválido")
+		
         
     endif
 	
