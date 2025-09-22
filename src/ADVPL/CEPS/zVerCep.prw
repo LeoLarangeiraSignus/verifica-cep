@@ -4,121 +4,7 @@
 
 #DEFINE ENTER CHAR(13) + CHAR(10)
 
-
-
-/*/{Protheus.doc} CepsErr
-    (long_description)
-    @type  Function
-    @author user
-    @since 17/09/2025
-    @version version
-    @param param_name, param_type, param_descr
-    @return return_var, return_type, return_description
-    @example
-    (examples)
-    @see (links_or_references)
-    /*/
-User Function CepsErr()
-    Private oReport
-    Private oSection1
-
-    Private cAlias1 := ""
-    Private cNomeRel := FunName()
-    Private cTitulo := "CEP's errados" + cDados[5]
-	Private cDescrRel := "Contém todos os CEP's que não estão corretos"
-
-    oReport:= reportDef()
-    oReport:printDialog()
-
-Return 
-
-/*/{Protheus.doc} reportDef
-    (long_description)
-    @type  Static Function
-    @author user
-    @since 17/09/2025
-    @version version
-    @param param_name, param_type, param_descr
-    @return return_var, return_type, return_description
-    @example
-    (examples)
-    @see (links_or_references)
-/*/
-Static Function reportDef()
-    Local nLinha := 1 
-
-
-    oReport := TReport():New(cNomeRel, cTitulo,, {|oReport| PrintReport(oReport)}, cDescrRel)
-    oReport:SetLandScape()
-    oReport:OPage:setPaperSize(9)
-    oReport:SetTotalLine(.F.)
-    oReport:ShowHeader()
-
-    oSection1 := TRSection():New(oReport, cTitulo)
-    oSection1:SetTotalInLine(.F.)
-
-    oReport:nfontBody := 7 
-    oReport:cfontBody := "Arial"
-    oReport:SetLineHeight(50)
-
-    // TRCell():New(oSection, cCampo, cAlias, cTitulo, bFormula, nLargura, nTipo, nDecimais)
-    //                  ok      n       n       ok          ok      ok      ok         ok
-    //                           cTitulo    cFormula, percorre o Array para os próximos valores.
-    //  {cEmail, cCep, cNome,"Formato Inválido"}
-    //   1         2    3       4                 
-    TRCell():New(oSection1, , , "EMAIL", {|| aDados[nLinha++]}, 30)
-    TRCell():New(oSection1, , , "CEP", {|| aDados[nLinha++]}, 10)
-    TRCell():New(oSection1, , , "NOME", {|| aDados[nLinha++]}, 30)
-    TRCell():New(oSection1, , , "ERRO", {|| aDados[nLinha++]}, 30)
-
-    // oBreak := TRBreak():New(oSection1, oSection1:Cell("EMAIL"),, .F.)
-
-
-
-Return (oReport)
-
-/*/{Protheus.doc} PrintReport
-    (long_description)
-    @type  Static Function
-    @author user
-    @since 19/09/2025
-    @version version
-    @param param_name, param_type, param_descr
-    @return return_var, return_type, return_description
-    @example
-    (examples)
-    @see (links_or_references)
-/*/
-Static Function PrintReport(oReport)
-   // passar o array de aDados 
-    Local oSection1 := oReport:Section(1)
-    Local nI := 1
-	// Metodo para pegar as perguntas, aqui, nós vamos decidir qual vai ser a planinlha que será usada
-		
-
-    Private lEndSection := .F.
-    Private lEndReport := .F.
-
-    oSection1:Init()
-    oSection:SetHeaderSection(.T.)
-    
-    for nI := 1 to Len(aDados)
-        If oReport:Cancel()
-            Exit 
-        Endif
-
-        oSection1:Cell("EMAIL"):setValue(aDados[1])
-        oSection1:Cell("CEP"):setValue(aDados[2])
-        oSection1:Cell("NOME"):setValue(aDados[3])
-        oSection1:Cell("ERRO"):setValue(aDados[4])
-
-        oSection1:PrintLine()
-        
-        oReport:ThinLine()
-
-        oSection1:Finish()
-    next
-Return 
+//verifica CEP 
 
 /*/{Protheus.doc} VerifyCEP
     (Verifica o CEP dos clientes com base na API do https://viacep.com.br/ws/{cep}/json/)
@@ -194,14 +80,17 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local cURL := 'https://viacep.com.br/ws/'+cCEP+'/json/'
 	Local jDados AS JSON 
 	Local cResult := ""
+	Local oReq AS OBJECT
+	// LOCAL oRes AS OBJECT 
 	Local aDados := {}
 	
+	oReq := JsonObject():New()
 	cResult := HttpGet(cURL)
-	if cResult:nStatusCode == 200
-		jDados := JsonDecode(cResult:cContent)
+	jDados := oReq:FromJson(cResult)
 
+	if oReq["erro"] 
 		if jDados:GetJsonObject('error')
-			aAdd(aDados, {{cEmail, cCep, cNome,"Formato Válido, porém CEP inexistente", cTNome }})
+			
 			FreeObj(jDados)
 		endif
 
@@ -218,7 +107,7 @@ Return aDados
 
 
 /*/{Protheus.doc} zGETSA1
-(Função para pegar todos os CEPS da SA1)
+Funcao para pegar todos os CEPS da SA1
 @type user function
 @author leonardo.larangeira
 @since 12/08/2025
@@ -232,12 +121,15 @@ Return aDados
 User Function zGETSA1()
     Local cQry1 := ""
 	Local cAlias1 := ""
+	// Local cCep := ""
+	// Local cEmail := ""
+	// Local cNome := ""
 
 
 	cAlias1	:= GetNextAlias()
-	cQry1 := "SELECT TOP 10 DISTINCT"
+	cQry1 := "SELECT  TOP 10"
 	cQry1 += ENTER + "SA1.A1_CEP AS CEP, SA1.A1_EMAIL AS EMAIL , SA1.A1_NOME AS NOME"
-	cQry1 += ENTER + "FROM " +RetSqlName('SA1')+ " AS SA1"
+	cQry1 += ENTER + "FROM " + RetSqlName("SA1")+ " AS SA1"
 	cQry1 += ENTER + "WHERE"
 	cQry1 += ENTER + "SA1.D_E_L_E_T_ <> '*'"
 	cQry1 += ENTER + "AND SA1.A1_MSBLQL <> '1'"
@@ -250,7 +142,8 @@ User Function zGETSA1()
 
 	while (cAlias1)->(!Eof())
 		//cCEP,cEmail,cNome ,cTNome
-		u_fGetCEP((cAlias1)->A1_CEP, (cAlias1)->A1_EMAIL, (cAlias1)->A1_NOME, 'SA1' )
+		
+		u_fGetCEP((cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME, 'SA1' )
 		(cAlias1)->(dbSkip())
     EndDo
 	(cAlias1)->(dbCloseArea())   
@@ -276,7 +169,7 @@ User Function zGETSA2()
 
 
 	cAlias2 := GetNextAlias()
-	cQry2 := "SELECT TOP 10 DISTINCT"
+	cQry2 := "SELECT TOP 10 "
 	cQry2 += ENTER + "SA2.A1_CEP AS CEP, SA2.A1_EMAIL AS EMAIL , SA2.A1_NOME AS NOME"
 	cQry2 += ENTER + "FROM " +RetSqlName('SA2')+ " AS SA2"
 	cQry2 += ENTER + "WHERE"
@@ -316,7 +209,7 @@ User Function zGETSA3()
 
 
 	cAlias3 := GetNextAlias()
-	cQry3 := "SELECT TOP 10 DISTINCT"
+	cQry3 := "SELECT TOP 10 "
 	cQry3 += ENTER + "SA3.A3_CEP AS CEP, SA3.A3_EMAIL AS EMAIL, SA3.A3_NOME AS NOME"
 	cQry3 += ENTER + "FROM " +RetSqlName('SA3')+ " AS SA3"
 	cQry3 += ENTER + "WHERE"
@@ -357,7 +250,7 @@ User Function zGETSA4()
 
 	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
-	cQry4 := "SELECT TOP 10 DISTINCT"
+	cQry4 := "SELECT TOP 10 "
 	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
 	cQry4 += ENTER + "FROM " +RetSqlName('SA4')+ " AS SA4"
 	cQry4 += ENTER + "WHERE"
