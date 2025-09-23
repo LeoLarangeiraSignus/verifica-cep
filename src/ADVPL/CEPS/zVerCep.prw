@@ -6,21 +6,40 @@
 
 //verifica CEP 
 
+
+/*
+
+Necessário alterar a busca do sistema na query. Não podemos admitir duplicatas. 
+SELECT 
+    A1_CEP AS CEP,
+    MAX(A1_EMAIL) AS EMAIL,
+    MAX(A1_NOME) AS NOME
+FROM SA1010
+WHERE
+    A1_MSBLQL <> '1'
+    AND D_E_L_E_T_ <> '*'
+    AND A1_CEP <> ''
+    AND A1_CEP <> '00000000'
+GROUP BY A1_CEP;
+
+*/
+
 /*/{Protheus.doc} VerifyCEP
     (Verifica o CEP dos clientes com base na API do https://viacep.com.br/ws/{cep}/json/)
     @type  Static Function
     @author user
     @since 11/08/2025
     @version version
-    @param cEmail, C, Email do cliente para contato
-	@param cCep, C, CEP para ser consumido pela API
-	@param cNome, C, Nome do Cliente para entrar em contato
-	@param cMotivo, C, Motivo gerado para o relatório
+    @param param_name, param_type, param_descr
+    @return return_var, return_type, return_description
+    @example
+    (examples)
+    @see (links_or_references)
 /*/
 Static Function rErCeps(cEmail, cCep, cNome, cMotivo, cFName)
 	Local oExcel := Nil
 	Local oSheet := Nil
-	Local cFileName := "ceps-errados-"+cFName+".xlsx"
+	Local cFileName := "C:\.LIXO\ceps-errados-"+cFName+".xlsx"
 	Local nLastRow := 2
 
 	if File(cFileName)
@@ -80,6 +99,7 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local jDados AS JSON 
 	Local cResult := ""
 	Local oReq AS OBJECT
+	// LOCAL oRes AS OBJECT 
 	Local aDados := {}
 	
 	oReq := JsonObject():New()
@@ -112,6 +132,9 @@ Funcao para pegar todos os CEPS da SA1
 User Function zGETSA1()
     Local cQry1 := ""
 	Local cAlias1 := ""
+	Local aRes := {}
+	Local aTotal := {}
+
 
 	cAlias1	:= GetNextAlias()
 	cQry1 := "SELECT DISTINCT TOP 10"
@@ -128,11 +151,14 @@ User Function zGETSA1()
 	(cAlias1)->(DbGoTop())
 
 	while (cAlias1)->(!Eof())
-		u_fGetCEP((cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME, 'SA1' )
+		aRes := u_fGetCEP((cAlias1)->CEP, (cAlias1)->EMAIL, (cAlias1)->NOME, 'SA1' )
+		if len(aRes) > 0
+			aAdd(aTotal, aRes[1][1])
+		endif
 		(cAlias1)->(dbSkip())
     EndDo
 	(cAlias1)->(dbCloseArea())   
-Return  
+Return  IF(len(aTotal) > 0, aTotal, 0)
 
 
 
@@ -191,6 +217,8 @@ User Function zGETSA3()
 
 	Local cQry3 := ""
 	Local cAlias3 := ""
+	Local aRes := {}
+	Local aTotal := {}
 
 
 	cAlias3 := GetNextAlias()
@@ -205,13 +233,18 @@ User Function zGETSA3()
 	TCQUERY cQry3 NEW ALIAS &cAlias3
 
 	(cAlias3)->(DbGoTop())
+	//cCEP,cEmail,cNome ,cTNome
+	
 	while (cAlias3)->(!Eof())
-		u_fGetCEP((cAlias3)->CEP, (cAlias3)-> EMAIL ,(cAlias3)->NOME, 'SA3')
+		aRes := u_fGetCEP((cAlias3)->CEP, (cAlias3)-> EMAIL ,(cAlias3)->NOME, 'SA3')
+		if len(aRes) > 0
+			aAdd(aTotal, aRes)
+		endif
 		(cAlias3)->(DbSkip())
 	EndDo
 	(cAlias3)->(dbCloseArea())
 
-Return
+Return IF(len(aTotal) > 0, aTotal, 0)
 
 
 /*/{Protheus.doc} zGETSA4
@@ -227,9 +260,13 @@ Return
 @see (links_or_references)
 /*/
 User Function zGETSA4()
+
 	Local cQry4 := ""
 	Local cAlias4 := ""
+	Local aRes := {}
+	Local aTotal := {}
 
+	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
 	cQry4 := "SELECT DISTINCT TOP 10 "
 	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
@@ -243,8 +280,12 @@ User Function zGETSA4()
 	(cAlias4)->(DbGoTop())
 	
 	while (cAlias4)->(!Eof())
-		u_fGetCEP((cAlias4)->CEP , (cAlias4)->EMAIL, (cAlias4)->NOME, 'SA4')
+		aRes := u_fGetCEP((cAlias4)->CEP , (cAlias4)->EMAIL, (cAlias4)->NOME, 'SA4')
+		if len(aRes) > 0
+			aAdd(aTotal, aRes)
+		endif		
 		(cAlias4)->(DbSkip())
 	EndDo
 	(cAlias4)->(dbCloseArea())
-Return
+
+Return IIF(len(aTotal) > 0, aTotal, 0)

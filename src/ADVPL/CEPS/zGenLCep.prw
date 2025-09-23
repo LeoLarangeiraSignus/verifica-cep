@@ -12,10 +12,10 @@ User Function CepsErr()
     Private cAlias1 := ""
     Private cNomeRel := FunName()
     Private cTitulo := "CEP's errados" + cDados[5]
-    Private cDescrRel := "Contém todos os CEP's que não estão corretos"
+    Private cDescrRel := "Relatório para todos os CEPS que possuem algum tipo de erro."
     
 
-    oReport:= reportDef()
+    oReport := reportDef()
     oReport:printDialog()
 
 Return 
