@@ -12,11 +12,10 @@
     @author user
     @since 11/08/2025
     @version version
-    @param param_name, param_type, param_descr
-    @return return_var, return_type, return_description
-    @example
-    (examples)
-    @see (links_or_references)
+    @param cEmail, C, Email do cliente para contato
+	@param cCep, C, CEP para ser consumido pela API
+	@param cNome, C, Nome do Cliente para entrar em contato
+	@param cMotivo, C, Motivo gerado para o relatório
 /*/
 Static Function rErCeps(cEmail, cCep, cNome, cMotivo, cFName)
 	Local oExcel := Nil
@@ -81,7 +80,6 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local jDados AS JSON 
 	Local cResult := ""
 	Local oReq AS OBJECT
-	// LOCAL oRes AS OBJECT 
 	Local aDados := {}
 	
 	oReq := JsonObject():New()
@@ -207,8 +205,6 @@ User Function zGETSA3()
 	TCQUERY cQry3 NEW ALIAS &cAlias3
 
 	(cAlias3)->(DbGoTop())
-	//cCEP,cEmail,cNome ,cTNome
-	
 	while (cAlias3)->(!Eof())
 		u_fGetCEP((cAlias3)->CEP, (cAlias3)-> EMAIL ,(cAlias3)->NOME, 'SA3')
 		(cAlias3)->(DbSkip())
@@ -231,11 +227,9 @@ Return
 @see (links_or_references)
 /*/
 User Function zGETSA4()
-
 	Local cQry4 := ""
 	Local cAlias4 := ""
 
-	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
 	cQry4 := "SELECT DISTINCT TOP 10 "
 	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
