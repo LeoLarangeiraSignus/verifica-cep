@@ -1,11 +1,9 @@
 Para amanhã
 manhã
--> continuar análise do problema para a criação da pasta para o MKT
-	- Preciso entender como eles estão consumindo as imagens, quem envia, como eles enviam. 
-	-> Isso está encaminhado, agora vou criar um espaço em disco para o central do mkt, quem sabe a gente não consegue puxar o valor dele. 
 -> Continuar com o projeto de ativos fixos, documentar. 
 tarde
 -> continuar o fonte que preenche a etiqueta em JSON. 
--> talvez eu receba ajuda na parte da tarde, ai a continuação do fonte deve ficar para a quinta-feira. 
 
+
+adicionar a logica para aRes[1][1] em todos eles e ver qual ele consegue retornar 
 
