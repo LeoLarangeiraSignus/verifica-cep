@@ -2,7 +2,6 @@
 #Include 'TOTVS.ch'
 #Include "TopConn.ch"
 
-#DEFINE ENTER CHAR(13) + CHAR(10)
 
 //verifica CEP 
 
@@ -23,6 +22,9 @@ WHERE
 GROUP BY A1_CEP;
 
 */
+#DEFINE ENTER CHAR(13) + CHAR(10)
+
+//verifica CEP 
 
 /*/{Protheus.doc} VerifyCEP
     (Verifica o CEP dos clientes com base na API do https://viacep.com.br/ws/{cep}/json/)
@@ -99,7 +101,6 @@ User Function fGetCEP(cCEP,cEmail,cNome ,cTNome)
 	Local jDados AS JSON 
 	Local cResult := ""
 	Local oReq AS OBJECT
-	// LOCAL oRes AS OBJECT 
 	Local aDados := {}
 	
 	oReq := JsonObject():New()
@@ -177,6 +178,8 @@ Funcao para pegar todos os valores da SA2
 User Function zGETSA2()
 	Local cQry2 := ""
 	Local cAlias2 := ""
+	Local aRes := {}
+	Local aTotal := {}
 
 
 	cAlias2 := GetNextAlias()
@@ -194,11 +197,15 @@ User Function zGETSA2()
 
 	//cCEP,cEmail,cNome ,cTNome
 	while (cAlias2)->(!Eof())
-		u_fGetCEP((cAlias2)->CEP,(cAlias2)-> EMAIL,(cAlias2)->NOME, 'SA2')
+		aRes := u_fGetCEP((cAlias2)->CEP,(cAlias2)-> EMAIL,(cAlias2)->NOME, 'SA2')
+
+		if len(aRes) > 0
+			aTotal := aRes
+		endif
 		(cAlias2)->(DbSkip())
      EndDo
 	 (cAlias2)->(dbCloseArea())
-Return  
+Return  IF (len(aTotal) > 0,aTotal, 0 )
 
 
 /*/{Protheus.doc} zGETSA3
@@ -266,7 +273,6 @@ User Function zGETSA4()
 	Local aRes := {}
 	Local aTotal := {}
 
-	// adicionar o campo complem
 	cAlias4 := GetNextAlias()
 	cQry4 := "SELECT DISTINCT TOP 10 "
 	cQry4 += ENTER + "SA4.A4_CEP AS CEP, SA4.A4_EMAIL AS EMAIL, SA4.A4_NOME AS NOME"
