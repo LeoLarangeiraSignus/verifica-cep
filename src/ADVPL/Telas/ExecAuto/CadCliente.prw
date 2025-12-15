@@ -15,7 +15,7 @@
 @see (links_or_references)
 /*/
 User Function CadCli()
-    Local oModel := ''
+    Local oModel := NIL
     Local aErro  := {}
     Local cErro  := ''
     Local i      := 0
@@ -29,10 +29,36 @@ User Function CadCli()
 
     //Acredito que eu posso passar valores que eu quiser nesse campo aqui, assim eu posso fazer o cadastro automatico 
     //desse valores, provalvelmente vai me ajudar a popular o banco de dados.
-    oModel:SetValue('SA1MASTER', 'A1_COD', '000003')
-    oModel:SetValue('SA1MASTER', 'A1_LOJA', '99')
-    oModel:SetValue('SA1MASTER', 'A1_NOME', 'EXECAUTO MVC')
-    oModel:SetValue('SA1MASTER', 'A1_NREDUZ', 'EXECAUTO')
-    oModel:SetValue('SA1MASTER', 'A1_PESSOA', 'F')
+    oModel:SetValue('SA1MASTER', 'A1_COD',      '000003')
+    oModel:SetValue('SA1MASTER', 'A1_LOJA',     '99')
+    oModel:SetValue('SA1MASTER', 'A1_NOME',     'EXECAUTO MVC')
+    oModel:SetValue('SA1MASTER', 'A1_NREDUZ',   'EXECAUTO')
+    oModel:SetValue('SA1MASTER', 'A1_PESSOA',   'F')
+    oModel:SetValue('SA1MASTER', 'A1_END',      'RUA TESTE MVC')
+    oModel:SetValue('SA1MASTER', 'A1_TIPO',     'F')
+    oModel:SetValue('SA1MASTER', 'A1_EST',      'SP')
+    oModel:SetValue('SA1MASTER', 'A1_MUN',      'SAO PAULO')
+
+    if oModel:VldData()
+        oModel:CommitData()
+        ConOut("Cliente incluido com sucesso")
+    Else
+        aErro := oModel:GetErroMessage()
+
+        For i := 1 To Len(aErro)
+            cErro += IIF(aErro[i] == 'C', aErro[i], '')
+        Next
+
+        ConOut(cErro)
+
+    Endif
+
+    oModel:DeActivate()
+    oModel:Destroy()
+
+    oModel := NIL
+
+    RpcClearEnv()
+
 Return 
 
